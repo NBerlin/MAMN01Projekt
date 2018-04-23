@@ -23,7 +23,6 @@ public class Detector implements SensorFenceListener {
         for (SensorFence fence : mFences) {
             fence.registerListener(this);
             fence.start(mContext);
-
         }
     }
 
