@@ -18,6 +18,8 @@ public class Detector implements SensorFenceListener {
     }
 
     public void start() {
+        mFences.add(new Accelerometer());
+
         for (SensorFence fence : mFences) {
             fence.registerListener(this);
             fence.start(mContext);
