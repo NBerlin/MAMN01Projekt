@@ -6,11 +6,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import java.sql.Timestamp;
+
 public class Accelerometer implements SensorFence, SensorEventListener {
 
     SensorManager sensorManager;
     Sensor accelerometer;
-
+    boolean flipped =false;
+    Timestamp start,end;
     @Override
     public void start(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -49,6 +52,16 @@ public class Accelerometer implements SensorFence, SensorEventListener {
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
+        if (z<0 &&!flipped){
+            flipped=true;
+            start = new Timestamp(System.currentTimeMillis());
+
+        }
+        if (z>0 && flipped){
+            flipped=false;
+            end = new Timestamp(System.currentTimeMillis());
+            Long diff = end.getTime()-start.getTime();
+        }
     }
 
     @Override
