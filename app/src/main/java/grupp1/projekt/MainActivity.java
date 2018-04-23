@@ -10,6 +10,7 @@ import java.util.Timer;
 import grupp1.projekt.detector.Detector;
 import grupp1.projekt.detector.DetectorListener;
 import grupp1.projekt.detector.SensorEnums;
+import grupp1.projekt.detector.SettingsValues;
 import grupp1.projekt.detector.StudyTimer;
 
 public class MainActivity extends AppCompatActivity implements DetectorListener {
@@ -26,11 +27,12 @@ public class MainActivity extends AppCompatActivity implements DetectorListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        timer = new StudyTimer(120);
+        timer = new StudyTimer();
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
         mDetector = new Detector(this);
         lastState = SensorEnums.OUTSIDE;
+        onStateChange(lastState);
     }
 
     @Override
@@ -51,15 +53,16 @@ public class MainActivity extends AppCompatActivity implements DetectorListener 
     public void onStateChange(SensorEnums state) {
         lastState = state;
 
-        if(state == SensorEnums.INSIDE){
+        if (state == SensorEnums.INSIDE) {
             timer.start();
         }
 
-        if(state == SensorEnums.OUTSIDE){
+        if (state == SensorEnums.OUTSIDE) {
             timer.stop();
         }
 
-
-        mTextView.setText("State " + state + " Minutes left to study: " + timer.timeLeft());
+        mTextView.setText("State " + state + "\nYou have studied for: "
+                + timer.getTotalStudied() + " seconds\nYour goal is to study for " + SettingsValues.MINUTES_TO_STUDY);
+        mProgressView.setProgress(timer.getTotalStudied() * 100 / SettingsValues.MINUTES_TO_STUDY);
     }
 }

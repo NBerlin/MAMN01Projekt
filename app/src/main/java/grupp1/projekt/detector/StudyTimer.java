@@ -3,13 +3,12 @@ package grupp1.projekt.detector;
 import java.util.concurrent.TimeUnit;
 
 public class StudyTimer {
-    private int minutesToStudy;
     private int totalStudied;
-    private long lastStart;
+    private Long lastStart;
 
-    public StudyTimer(int minutesToStudy) {
-        this.minutesToStudy = minutesToStudy;
+    public StudyTimer() {
         totalStudied = 0;
+        lastStart = null;
     }
 
     public void start() {
@@ -18,12 +17,13 @@ public class StudyTimer {
 
     public void stop() {
         long stop = System.currentTimeMillis();
-        if (lastStart < stop) {
-            totalStudied = (int) TimeUnit.MILLISECONDS.toMinutes(stop - lastStart);
+        if (lastStart != null && lastStart < stop) {
+            totalStudied += (int) TimeUnit.MILLISECONDS.toSeconds(stop - lastStart);
         }
+        lastStart = null;
     }
 
-    public int timeLeft() {
-        return minutesToStudy - totalStudied;
+    public int getTotalStudied() {
+        return totalStudied;
     }
 }
