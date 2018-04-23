@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ public class Accelerometer implements SensorFence, SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private boolean flipped;
-    private Timestamp start, end;
     private List<SensorFenceListener> listeners;
 
     public Accelerometer() {
