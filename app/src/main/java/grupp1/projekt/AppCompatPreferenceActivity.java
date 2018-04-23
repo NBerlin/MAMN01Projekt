@@ -25,6 +25,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.pref_general);
     }
 
     @Override
