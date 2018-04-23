@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Timer;
+
 import grupp1.projekt.detector.Detector;
 import grupp1.projekt.detector.DetectorListener;
 import grupp1.projekt.detector.SensorEnums;
+import grupp1.projekt.detector.StudyTimer;
 
 public class MainActivity extends AppCompatActivity implements DetectorListener {
 
@@ -15,16 +18,19 @@ public class MainActivity extends AppCompatActivity implements DetectorListener 
 
     private TextView mTextView;
     private ProgressBar mProgressView;
+    private SensorEnums lastState;
+    private StudyTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        timer = new StudyTimer(120);
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
-
         mDetector = new Detector(this);
+        lastState = SensorEnums.OUTSIDE;
     }
 
     @Override
@@ -43,6 +49,17 @@ public class MainActivity extends AppCompatActivity implements DetectorListener 
 
     @Override
     public void onStateChange(SensorEnums state) {
-        mTextView.setText("State " + state);
+        lastState = state;
+
+        if(state == SensorEnums.INSIDE){
+            timer.start();
+        }
+
+        if(state == SensorEnums.OUTSIDE){
+            timer.stop();
+        }
+
+
+        mTextView.setText("State " + state + " Minutes left to study: " + timer.timeLeft());
     }
 }
