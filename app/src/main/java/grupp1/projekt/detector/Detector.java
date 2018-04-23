@@ -32,6 +32,14 @@ public class Detector implements SensorFenceListener {
         }
     }
 
+    public void registerListener(DetectorListener listener) {
+        mListeners.add(listener);
+    }
+
+    public void unregisterListener(DetectorListener listener) {
+        mListeners.remove(listener);
+    }
+
     @Override
     public void stateChanged(SensorFence sensor, int state) {
         boolean isInside = true;
