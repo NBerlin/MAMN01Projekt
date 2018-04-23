@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class Accelerometer implements SensorFence, SensorEventListener {
     private Sensor accelerometer;
     private boolean flipped;
     private List<SensorFenceListener> listeners;
+    private boolean lastState;
 
     public Accelerometer() {
         flipped = false;
@@ -52,20 +54,22 @@ public class Accelerometer implements SensorFence, SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        lastState = flipped;
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
         if (z < 0 && !flipped) {
             flipped = true;
-
         }
 
         if (z > 0 && flipped) {
             flipped = false;
         }
 
-        for (SensorFenceListener listener : listeners) {
-            listener.stateChanged(this, getSensorEnum());
+        if (lastState != flipped) {
+            for (SensorFenceListener listener : listeners) {
+                listener.stateChanged(this, getSensorEnum());
+            }
         }
     }
 
@@ -74,7 +78,7 @@ public class Accelerometer implements SensorFence, SensorEventListener {
         //idk
     }
 
-    private SensorEnums getSensorEnum(){
+    private SensorEnums getSensorEnum() {
         return flipped ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
     }
 }
