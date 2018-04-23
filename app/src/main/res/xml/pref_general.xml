@@ -3,6 +3,7 @@
     <EditTextPreference
         android:defaultValue="240"
         android:inputType="number"
+        android:numeric="integer"
         android:key="study_goal_minutes"
         android:maxLines="1"
         android:selectAllOnFocus="true"
@@ -10,7 +11,7 @@
         android:title="@string/pref_title_study_goal_minutes" />
 
     <SwitchPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="pomodoro_enabled"
         android:summary="@string/pref_description_social_recommendations"
         android:title="@string/pref_title_pomodoro_enabled" />
