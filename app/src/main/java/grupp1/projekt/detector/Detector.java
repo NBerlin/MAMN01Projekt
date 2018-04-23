@@ -41,13 +41,13 @@ public class Detector implements SensorFenceListener {
     }
 
     @Override
-    public void stateChanged(SensorFence sensor, int state) {
+    public void stateChanged(SensorFence sensor, SensorEnums state) {
         boolean isInside = true;
         for (SensorFence mFence : mFences) {
-            isInside &= mFence.getLastState() == SensorFenceListener.inside;
+            isInside &= mFence.getLastState() == SensorEnums.INSIDE;
         }
 
-        int outState = isInside ? DetectorListener.inside : DetectorListener.outside;
+        SensorEnums outState = isInside ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
 
         for (DetectorListener listener : mListeners) {
             listener.onStateChange(outState);

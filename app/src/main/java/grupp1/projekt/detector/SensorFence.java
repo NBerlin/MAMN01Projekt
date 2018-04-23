@@ -10,6 +10,6 @@ public interface SensorFence {
     void registerListener(SensorFenceListener listener);
     void unregisterListener(SensorFenceListener listener);
 
-    int getLastState();
+    SensorEnums getLastState();
 
 }

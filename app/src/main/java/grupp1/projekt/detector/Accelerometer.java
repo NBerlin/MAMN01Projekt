@@ -5,15 +5,23 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Accelerometer implements SensorFence, SensorEventListener {
 
-    SensorManager sensorManager;
-    Sensor accelerometer;
-    boolean flipped =false;
-    Timestamp start,end;
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private boolean flipped;
+    private Timestamp start, end;
+    private List<SensorFenceListener> listeners;
+
+    public Accelerometer() {
+        flipped = false;
+        listeners = new ArrayList<>();
+    }
+
     @Override
     public void start(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -31,41 +39,44 @@ public class Accelerometer implements SensorFence, SensorEventListener {
 
     @Override
     public void registerListener(SensorFenceListener listener) {
-
+        listeners.add(listener);
     }
 
     @Override
     public void unregisterListener(SensorFenceListener listener) {
-
+        listeners.remove(listener);
     }
 
     @Override
-    public int getLastState() {
-        return 0;
+    public SensorEnums getLastState() {
+        return getSensorEnum();
     }
-
-
-    // x < 0 ? "right" : "left"
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
-        if (z<0 &&!flipped){
-            flipped=true;
-            start = new Timestamp(System.currentTimeMillis());
+        if (z < 0 && !flipped) {
+            flipped = true;
 
         }
-        if (z>0 && flipped){
-            flipped=false;
-            end = new Timestamp(System.currentTimeMillis());
-            Long diff = end.getTime()-start.getTime();
+
+        if (z > 0 && flipped) {
+            flipped = false;
+        }
+
+        for (SensorFenceListener listener : listeners) {
+            listener.stateChanged(this, getSensorEnum());
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //idk
+    }
+
+    private SensorEnums getSensorEnum(){
+        return flipped ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
     }
 }
