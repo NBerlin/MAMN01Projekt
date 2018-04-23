@@ -4,7 +4,12 @@ import android.content.Context;
 
 public interface SensorFence {
 
-    void register(Context context);
-    void unregister();
+    void start(Context context);
+    void stop();
+
+    void registerListener(SensorFenceListener listener);
+    void unregisterListener(SensorFenceListener listener);
+
+    int getLastState();
 
 }

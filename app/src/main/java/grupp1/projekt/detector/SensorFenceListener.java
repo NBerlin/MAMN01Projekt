@@ -6,6 +6,6 @@ public interface SensorFenceListener {
     int inside = 101;
     int outside = 102;
 
-    void stateChanged(int state);
+    void stateChanged(SensorFence sensor, int state);
 
 }

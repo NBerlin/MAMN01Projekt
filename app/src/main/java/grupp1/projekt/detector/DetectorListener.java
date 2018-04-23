@@ -2,7 +2,9 @@ package grupp1.projekt.detector;
 
 public interface DetectorListener {
 
-    void registerListener();
-    void unregisterListener();
+    int inside = 102;
+    int outside = 103;
+
+    void onStateChange(int state);
 
 }
