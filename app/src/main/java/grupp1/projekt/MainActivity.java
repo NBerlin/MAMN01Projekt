@@ -11,7 +11,7 @@ import android.widget.TextView;
 import grupp1.projekt.detector.Detector;
 import grupp1.projekt.detector.DetectorListener;
 import grupp1.projekt.detector.SensorEnums;
-import grupp1.projekt.detector.SettingsValues;
+import grupp1.projekt.settings.SettingsValues;
 import grupp1.projekt.settings.SettingActivity;
 import grupp1.projekt.detector.StudyTimer;
 
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private TextView mTextView;
     private ProgressBar mProgressView;
     private Button mSettingsButton;
+
+    private SettingsValues mSettingsValues;
 
     private SensorEnums lastState;
     private StudyTimer timer;
@@ -38,12 +40,15 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         mDetector = new Detector(this);
         lastState = SensorEnums.OUTSIDE;
-        onStateChange(lastState);
+
+        mSettingsValues = new SettingsValues(this.getBaseContext());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        onStateChange(lastState);
+
         mDetector.registerListener(this);
         mDetector.start();
 
@@ -69,9 +74,11 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
             timer.stop();
         }
 
+        int timeToStudy = mSettingsValues.getMinutesToStudy();
+
         mTextView.setText("State " + state + "\nYou have studied for: "
-                + timer.getTotalStudied() + " seconds\nYour goal is to study for " + SettingsValues.MINUTES_TO_STUDY);
-        mProgressView.setProgress(timer.getTotalStudied() * 100 / SettingsValues.MINUTES_TO_STUDY);
+                + timer.getTotalStudied() + " seconds\nYour goal is to study for " + timeToStudy);
+        mProgressView.setProgress(timer.getTotalStudied() * 100 / timeToStudy);
     }
 
     @Override
