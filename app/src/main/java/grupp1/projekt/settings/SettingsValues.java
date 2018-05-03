@@ -15,7 +15,16 @@ public class SettingsValues {
     }
 
     public int getMinutesToStudy() {
-        return Integer.valueOf(mPreferences.getString(TIME_TO_STUDY_PREF, "-1"));
+        int study;
+        try {
+            study = Integer.valueOf(mPreferences.getString(TIME_TO_STUDY_PREF, "-1"));
+        } catch (Exception e) {
+            study = 10;
+        }
+        if (study < 1) {
+            study = 10;
+        }
+        return study;
     }
 
 }
