@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        timer = new StudyTimer();
+        timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
         mSettingsButton = findViewById(R.id.button_settings);
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         if (state == SensorEnums.OUTSIDE) {
             timer.stop();
-            if (timer.getTotalStudied() >= mSettingsValues.getMinutesToStudy()) {
+            if (timer.getToday() >= mSettingsValues.getMinutesToStudy()) {
                 mediaPlayer.start();
                 mProgressView.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
         mTextView.setText("State " + state + "\nYou have studied for: "
-                + timer.getTotalStudied() + " seconds\nYour goal is to study for " + timeToStudy);
-        mProgressView.setProgress(timer.getTotalStudied() * 100 / timeToStudy);
+                + timer.getToday() + " seconds\nYour goal is to study for " + timeToStudy);
+        mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
 
     @Override
