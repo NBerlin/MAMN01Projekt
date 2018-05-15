@@ -36,13 +36,14 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     private SensorEnums lastState;
     private StudyTimer timer;
+    private boolean hasRung;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        timer = new StudyTimer();
+        hasRung = false;
+        timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
         mSettingsButton = findViewById(R.id.button_settings);
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         if (state == SensorEnums.OUTSIDE) {
             timer.stop();
-            if (timer.getTotalStudied() >= mSettingsValues.getMinutesToStudy()) {
+            if (timer.getToday() >= mSettingsValues.getMinutesToStudy() && !hasRung) {
                 mediaPlayer.start();
                 mProgressView.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -92,14 +93,15 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
                     //deprecated in API 26
                     v.vibrate(500);
                 }
+                hasRung = true;
             }
         }
 
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
-        mTextView.setText("State " + state + "\nYou have studied for: "
-                + timer.getTotalStudied() + " seconds\nYour goal is to study for " + timeToStudy);
-        mProgressView.setProgress(timer.getTotalStudied() * 100 / timeToStudy);
+        mTextView.setText("Currently: " + (state == SensorEnums.INSIDE ? "Studying" : "Not studying, flip to start") + "\nYou have studied for: "
+                + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + "minutes");
+        mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
 
     @Override
