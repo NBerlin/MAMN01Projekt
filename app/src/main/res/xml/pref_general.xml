@@ -10,10 +10,33 @@
         android:singleLine="true"
         android:title="@string/pref_title_study_goal_minutes" />
 
+
     <SwitchPreference
-        android:defaultValue="false"
-        android:key="pomodoro_enabled"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_pomodoro_enabled" />
+        android:defaultValue="true"
+        android:key="feedback_on"
+        android:title="@string/pref_title_feedback" />
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="do_not_disturb"
+        android:title="@string/pref_do_not_disturb" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+            android:key="detector_accelerometer"
+        android:title="@string/pref_title_accelerometer" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="detector_proximity"
+        android:title="@string/pref_title_proximity" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="detector_voice"
+        android:title="@string/pref_title_voice" />
+
+
 
 </PreferenceScreen>
