@@ -77,4 +77,9 @@ public class Proximity implements SensorFence, SensorEventListener {
     public SensorEnums getLastState() {
         return result;
     }
+
+    @Override
+    public String getName() {
+        return "proximity";
+    }
 }

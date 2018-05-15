@@ -81,4 +81,9 @@ public class Accelerometer implements SensorFence, SensorEventListener {
     private SensorEnums getSensorEnum() {
         return flipped ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
     }
+
+    @Override
+    public String getName() {
+        return "accelerometer";
+    }
 }
