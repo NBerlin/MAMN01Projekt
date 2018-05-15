@@ -1,6 +1,7 @@
 package grupp1.projekt.detector;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ public class Detector implements SensorFenceListener {
 
     public void start() {
         mFences.add(new Accelerometer());
+        mFences.add(new Proximity());
 
         for (SensorFence fence : mFences) {
             fence.registerListener(this);
@@ -44,6 +46,7 @@ public class Detector implements SensorFenceListener {
     @Override
     public void stateChanged(SensorFence sensor, SensorEnums state) {
         boolean isInside = true;
+        Log.d("Detector", "onStateChange " + sensor.getClass().getSimpleName() + " " + state);
         for (SensorFence mFence : mFences) {
             isInside &= mFence.getLastState() == SensorEnums.INSIDE;
         }
