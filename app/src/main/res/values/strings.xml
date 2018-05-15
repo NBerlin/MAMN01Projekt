@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Projekt</string>
+    <string name="app_name">PluggFokus</string>
     <string name="title_activity_timer">Timer</string>
 
     <!-- Strings related to Settings -->
