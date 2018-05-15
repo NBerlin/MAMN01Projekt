@@ -67,7 +67,7 @@ public class Detector implements SensorFenceListener {
     }
 
     private void setSilent(boolean silent, Context context) {
-        if (!mSettings.doNotDisturbOn()) {
+        if (!mSettings.isDoNotDisturbOn()) {
             return;
         }
         NotificationManager notificationManager =
