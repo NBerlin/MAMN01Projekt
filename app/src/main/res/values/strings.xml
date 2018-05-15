@@ -74,6 +74,10 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_title_study_goal_minutes">Study goal (minutes)</string>
-    <string name="pref_title_pomodoro_enabled">Remind me to take breaks when studying</string>
     <string name="title_activity_setting">SettingActivity</string>
+    <string name="pref_title_accelerometer">Accelerometer detection</string>
+    <string name="pref_title_proximity">Proximity detection</string>
+    <string name="pref_title_voice">Voice detection</string>
+    <string name="pref_title_feedback">Audible feedback</string>
+    <string name="pref_do_not_disturb">Do not disturb</string>
 </resources>
