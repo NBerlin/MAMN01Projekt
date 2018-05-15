@@ -12,4 +12,5 @@ public interface SensorFence {
 
     SensorEnums getLastState();
 
+    String getName();
 }

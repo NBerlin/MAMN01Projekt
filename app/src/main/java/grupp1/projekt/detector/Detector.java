@@ -10,6 +10,7 @@ import grupp1.projekt.settings.SettingsValues;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Detector implements SensorFenceListener {
 
@@ -17,6 +18,7 @@ public class Detector implements SensorFenceListener {
     private final ArrayList<SensorFence> mFences;
     private final SettingsValues mSettings;
     private final Context mContext;
+    private HashMap<String, grupp1.projekt.detector.SensorEnums> states;
 
     public Detector(Context context) {
         mListeners = new ArrayList<>();
@@ -88,5 +90,13 @@ public class Detector implements SensorFenceListener {
                 }
             }
         }
+    }
+
+    public HashMap<String, SensorEnums> getFenceStates() {
+        HashMap<String, SensorEnums> map = new HashMap<>();
+        for (SensorFence fence : mFences) {
+            map.put(fence.getName(), fence.getLastState());
+        }
+        return map;
     }
 }
