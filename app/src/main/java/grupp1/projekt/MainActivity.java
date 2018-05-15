@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         mSettingsButton = findViewById(R.id.button_settings);
         mTextAccelerometer = findViewById(R.id.text_accelerometer);
         mTextProximity = findViewById(R.id.text_proximity);
+        mProgressView.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
+        mProgressView.setProgress(timer.getToday());
 
 
         mDetector = new Detector(this);
@@ -87,7 +89,9 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         } else if (state == SensorEnums.OUTSIDE) {
             timer.stop();
             if (timer.getToday() >= mSettingsValues.getMinutesToStudy() && !hasRung) {
-                mediaPlayer.start();
+                if (mediaPlayer != null) {
+                    mediaPlayer.start();
+                }
                 mProgressView.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
             TextView view = null;
             if (key.equals("proximity")) {
                 view = mTextProximity;
-            } else if ( key.equals("accelerometer")) {
+            } else if (key.equals("accelerometer")) {
                 view = mTextAccelerometer;
             }
 

@@ -1,16 +1,13 @@
 package grupp1.projekt.detector;
 
-import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 
 import grupp1.projekt.settings.SettingsValues;
 
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -102,7 +99,7 @@ public class Detector implements SensorFenceListener {
             mContext.startActivity(intent);
         }
 
-        if (!notificationManager.isNotificationPolicyAccessGranted()) {
+        if (notificationManager.isNotificationPolicyAccessGranted()) {
             AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             if (audio != null) {
                 if (silent) {

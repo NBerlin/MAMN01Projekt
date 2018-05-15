@@ -15,13 +15,11 @@ import static grupp1.projekt.detector.SensorEnums.INSIDE;
 import static grupp1.projekt.detector.SensorEnums.OUTSIDE;
 
 public class Proximity implements SensorFence, SensorEventListener {
+    SensorEnums result;
     private SensorManager sensorManager;
     private Sensor proximitySensor;
     private List<SensorFenceListener> listeners;
     private PowerManager pm;
-    private PowerManager.WakeLock mProximityWakeLock;
-    SensorEnums result;
-
 
 
     public Proximity() {
@@ -50,8 +48,6 @@ public class Proximity implements SensorFence, SensorEventListener {
     @Override
     public void start(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        mProximityWakeLock = pm.newWakeLock(32, "test");
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         }
