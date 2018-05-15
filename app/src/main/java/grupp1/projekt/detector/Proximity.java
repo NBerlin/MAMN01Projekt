@@ -21,21 +21,22 @@ public class Proximity implements SensorFence, SensorEventListener {
     private PowerManager.WakeLock mProximityWakeLock;
 
 
-    public Proximity(){
+    public Proximity() {
         listeners = new ArrayList<SensorFenceListener>();
 
     }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         float distance = event.values[0];
         SensorEnums result;
-        if(distance < proximitySensor.getMaximumRange()) {
-            result=INSIDE;
+        if (distance < 3.0) {
+            result = INSIDE;
         } else {
-            result=OUTSIDE;
+            result = OUTSIDE;
         }
         for (SensorFenceListener listener : listeners) {
-            listener.stateChanged(this,result);
+            listener.stateChanged(this, result);
         }
     }
 
@@ -48,9 +49,9 @@ public class Proximity implements SensorFence, SensorEventListener {
     public void start(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        mProximityWakeLock = pm.newWakeLock(32,"test");
+        mProximityWakeLock = pm.newWakeLock(32, "test");
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         }
         sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
