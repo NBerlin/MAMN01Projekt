@@ -2,7 +2,6 @@ package grupp1.projekt.detector;
 
 import android.content.Context;
 
-import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +10,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import grupp1.projekt.util.Storage;
+import grupp1.projekt.settings.SettingsValues;
 
 public class StudyTimer {
     private DateFormat mDateFormat;
@@ -19,10 +19,12 @@ public class StudyTimer {
 
     private Long lastStart;
     private HashMap<String, Integer> mStorage;
+    private boolean hasRung;
 
     public StudyTimer(Context context) {
         mContext = context;
         lastStart = null;
+        hasRung = false;
         mStorage = Storage.loadStudyTime(context);
         mDateFormat = new SimpleDateFormat("YYYY-MM-DD", Locale.getDefault());
     }
@@ -41,14 +43,27 @@ public class StudyTimer {
         lastStart = null;
     }
 
+    public int getToday() {
+        String key = mDateFormat.format(new Date());
+        return mStorage.containsKey(key) ? mStorage.get(key) : 0;
+    }
+
     private void setToday(int totalStudied) {
         String key = mDateFormat.format(new Date());
         mStorage.put(key, totalStudied);
         Storage.saveStudyTime(mContext, mStorage);
     }
 
-    public int getToday() {
-        String key = mDateFormat.format(new Date());
-        return mStorage.containsKey(key) ? mStorage.get(key) : 0;
+    public void factoryReset() {
+        mStorage = new HashMap<>();
+        lastStart = null;
+    }
+
+    public void ring() {
+        hasRung = true;
+    }
+
+    public boolean hasRungToday() {
+        return hasRung;
     }
 }

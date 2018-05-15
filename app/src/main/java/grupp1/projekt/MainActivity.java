@@ -38,13 +38,11 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     private SensorEnums lastState;
     private StudyTimer timer;
-    private boolean hasRung;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        hasRung = false;
         timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
@@ -88,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
             timer.start();
         } else if (state == SensorEnums.OUTSIDE) {
             timer.stop();
-            if (timer.getToday() >= mSettingsValues.getMinutesToStudy() && !hasRung) {
+            if (timer.getToday() >= mSettingsValues.getMinutesToStudy() && !timer.hasRungToday()) {
+                timer.ring();
                 if (mediaPlayer != null) {
                     mediaPlayer.start();
                 }
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
                     //deprecated in API 26
                     v.vibrate(500);
                 }
-                hasRung = true;
             }
         } else {
             throw new RuntimeException("How did you end up here?");
