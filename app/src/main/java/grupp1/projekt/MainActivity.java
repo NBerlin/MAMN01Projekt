@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
         mTextView.setText("Currently: " + (state == SensorEnums.INSIDE ? "Studying" : "Not studying, flip to start") + "\nYou have studied for: "
-                + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + "minutes");
+                + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + " minutes");
         mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
 

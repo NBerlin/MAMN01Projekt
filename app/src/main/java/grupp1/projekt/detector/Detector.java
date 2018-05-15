@@ -1,12 +1,16 @@
 package grupp1.projekt.detector;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 
 import grupp1.projekt.settings.SettingsValues;
 
+import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -61,8 +65,26 @@ public class Detector implements SensorFenceListener {
         SensorEnums outState = isInside ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
 
         setSilent(isInside, mContext);
+        setBrightness(isInside, mContext);
         for (DetectorListener listener : mListeners) {
             listener.onStateChange(outState);
+        }
+    }
+
+    private void setBrightness(boolean darken, Context mContext) {
+        if (!Settings.System.canWrite(mContext)) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+            mContext.startActivity(intent);
+        }
+
+        if (Settings.System.canWrite(mContext)) {
+            if (darken) {
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.SCREEN_BRIGHTNESS, 0);
+            } else {
+                Settings.System.putInt(mContext.getContentResolver(),
+                        Settings.System.SCREEN_BRIGHTNESS, 125);
+            }
         }
     }
 
