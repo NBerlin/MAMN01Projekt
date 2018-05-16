@@ -15,29 +15,31 @@ import static grupp1.projekt.detector.SensorEnums.INSIDE;
 import static grupp1.projekt.detector.SensorEnums.OUTSIDE;
 
 public class Proximity implements SensorFence, SensorEventListener {
-    SensorEnums result;
+    SensorEnums mLastState;
     private SensorManager sensorManager;
     private Sensor proximitySensor;
-    private List<SensorFenceListener> listeners;
+    private List<SensorFenceListener> mListeners;
     private PowerManager pm;
 
 
     public Proximity() {
-        listeners = new ArrayList<>();
+        mListeners = new ArrayList<>();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         float distance = event.values[0];
+        SensorEnums state;
         if (distance < 5.0) {
-            result = INSIDE;
+            state = INSIDE;
         } else {
-            result = OUTSIDE;
+            state = OUTSIDE;
         }
-        for (SensorFenceListener listener : listeners) {
-            listener.stateChanged(this, result);
+        if (mLastState != state) {
+            mLastState = state;
+            informListeners(state);
         }
-        Log.d("Proximity", String.valueOf(event.values[0]));
+        // Log.d("Proximity", String.valueOf(event.values[0]));
     }
 
     @Override
@@ -61,17 +63,23 @@ public class Proximity implements SensorFence, SensorEventListener {
 
     @Override
     public void registerListener(SensorFenceListener listener) {
-        listeners.add(listener);
+        mListeners.add(listener);
     }
 
     @Override
     public void unregisterListener(SensorFenceListener listener) {
-        listeners.remove(listener);
+        mListeners.remove(listener);
+    }
+
+    private void informListeners(SensorEnums state) {
+        for (SensorFenceListener listener : mListeners) {
+            listener.stateChanged(this, state);
+        }
     }
 
     @Override
     public SensorEnums getLastState() {
-        return result;
+        return mLastState;
     }
 
     @Override
