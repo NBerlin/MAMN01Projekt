@@ -26,7 +26,7 @@ public class StudyTimer {
         lastStart = null;
         hasRung = false;
         mStorage = Storage.loadStudyTime(context);
-        mDateFormat = new SimpleDateFormat("YYYY-MM-DD", Locale.getDefault());
+        mDateFormat = new SimpleDateFormat("yyyy-MM-DD", Locale.getDefault());
     }
 
     public void start() {

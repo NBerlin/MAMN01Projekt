@@ -24,16 +24,19 @@ import grupp1.projekt.detector.SensorEnums;
 import grupp1.projekt.settings.SettingsValues;
 import grupp1.projekt.settings.SettingActivity;
 import grupp1.projekt.detector.StudyTimer;
+import grupp1.projekt.util.SystemSettings;
 
 public class MainActivity extends AppCompatActivity implements DetectorListener, View.OnClickListener {
 
     private Detector mDetector;
 
-    private TextView mTextView, mTextAccelerometer, mTextProximity;
+    private TextView mTextView, mTextAccelerometer, mTextProximity, mTextNoise;
     private ProgressBar mProgressView;
     private Button mSettingsButton;
     private MediaPlayer mediaPlayer;
 
+    private SystemSettings mSystemSettings;
+    private SettingsChanger mSettingsChanger;
     private SettingsValues mSettingsValues;
 
     private SensorEnums lastState;
@@ -47,15 +50,21 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
         mSettingsButton = findViewById(R.id.button_settings);
+
         mTextAccelerometer = findViewById(R.id.text_accelerometer);
         mTextProximity = findViewById(R.id.text_proximity);
+        mTextNoise = findViewById(R.id.text_noise);
+
         mProgressView.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
         mProgressView.setProgress(timer.getToday());
 
-
         mDetector = new Detector(this);
         lastState = SensorEnums.OUTSIDE;
+
         mSettingsValues = new SettingsValues(this.getBaseContext());
+        mSettingsChanger = new SettingsChanger(this.getBaseContext());
+        mSystemSettings = new SystemSettings(this.getBaseContext());
+
         onStateChange(lastState);
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.tada);
     }
@@ -63,10 +72,19 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     @Override
     protected void onStart() {
         super.onStart();
+        if (mSettingsValues.isBrightnessOn() && !mSystemSettings.isBrightnessAvailable()) {
+            mSystemSettings.requestBrightness(this);
+        } else if(mSettingsValues.isDoNotDisturbOn() && !mSystemSettings.isDoNotDisturbAvailable()) {
+            mSystemSettings.requestDoNotDisturb(this);
+        } else if (mSettingsValues.isNoiseOn() && !mSystemSettings.isRecordingAvailable()) {
+            mSystemSettings.requestAudioRecording(this);
+        }
+
         onStateChange(lastState);
 
         mDetector.registerListener(this);
-        mDetector.start();
+        mDetector.registerListener(mSettingsChanger);
+        mDetector.restart();
 
         mSettingsButton.setOnClickListener(this);
     }
@@ -75,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     protected void onStop() {
         super.onStop();
         mDetector.unregisterListener(this);
+        mDetector.unregisterListener(mSettingsChanger);
         mDetector.stop();
     }
 
@@ -111,13 +130,19 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
                 view = mTextProximity;
             } else if (key.equals("accelerometer")) {
                 view = mTextAccelerometer;
+            } else if (key.equals("noise")) {
+                view = mTextNoise;
             }
 
             SensorEnums s = fenceStates.get(key);
             if (s == SensorEnums.INSIDE) {
                 view.setBackgroundColor(Color.GREEN);
-            } else {
+                view.setVisibility(View.VISIBLE);
+            } else if (s == SensorEnums.OUTSIDE) {
                 view.setBackgroundColor(Color.RED);
+                view.setVisibility(View.VISIBLE);
+            } else {
+                view.setVisibility(View.GONE);
             }
         }
 
@@ -129,8 +154,20 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SystemSettings.REQUEST_CODE_AUDIO) {
+            mDetector.restart();
+        } else if (requestCode == SystemSettings.REQUEST_CODE_SETTINGS) {
+            mTextAccelerometer.setVisibility(View.GONE);
+            mTextProximity.setVisibility(View.GONE);
+            mTextNoise.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         Intent intent = new Intent(this, SettingActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SystemSettings.REQUEST_CODE_SETTINGS);
     }
 }

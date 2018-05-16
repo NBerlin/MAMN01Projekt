@@ -4,7 +4,7 @@ import android.content.Context;
 
 public interface SensorFence {
 
-    void start(Context context);
+    void start(Context context) throws PermissionException;
     void stop();
 
     void registerListener(SensorFenceListener listener);

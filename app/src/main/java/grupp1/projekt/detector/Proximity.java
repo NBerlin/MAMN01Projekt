@@ -35,6 +35,7 @@ public class Proximity implements SensorFence, SensorEventListener {
         } else {
             state = OUTSIDE;
         }
+
         if (mLastState != state) {
             mLastState = state;
             informListeners(state);
