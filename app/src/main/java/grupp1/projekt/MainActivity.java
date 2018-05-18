@@ -9,14 +9,13 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.os.Vibrator;
-
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private TextView mTextView, mTextAccelerometer, mTextProximity, mTextNoise;
     private ProgressBar mProgressView;
     private Button mSettingsButton;
+    private Button mStartButton;
     private MediaPlayer mediaPlayer;
 
     private SystemSettings mSystemSettings;
@@ -46,7 +46,10 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private Speaker mSpeaker;
 
     private Handler mHandler;
+
     private AtomicBoolean mHandlerIsRunning = new AtomicBoolean(false);
+    private boolean hasRung;
+    private boolean hasStarted;
 
     private FenceState lastState;
     private StudyTimer timer;
@@ -67,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        hasRung = false;
+        hasStarted = false;
+        mStartButton = findViewById(R.id.button_start);
         timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         mDetector.restart();
 
         mSettingsButton.setOnClickListener(this);
+        mStartButton.setOnClickListener(this);
     }
 
     @Override
@@ -196,9 +203,25 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, SettingActivity.class);
-        startActivityForResult(intent, SystemSettings.REQUEST_CODE_SETTINGS);
-    }
+        switch (v.getId()) {
+            case R.id.button_settings: {
 
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
+            }
+            case R.id.button_start: {
+                if(!hasStarted) {
+                    mDetector.registerListener(this);
+                    mDetector.start();
+                    hasStarted=true;
+                }
+                else{
+                    mDetector.unregisterListener(this);
+                    mDetector.stop();
+                    hasStarted=false;
+                }
+            }
+        }
+    }
 
 }
