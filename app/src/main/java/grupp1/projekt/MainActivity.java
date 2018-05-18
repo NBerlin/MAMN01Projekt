@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     private Detector mDetector;
 
-    private TextView mTextView, mTextAccelerometer, mTextProximity, mTextNoise;
+    private TextView mTextView, mInstructions, mTextAccelerometer, mTextNoise;
     private ProgressBar mProgressView;
     private Button mSettingsButton;
     private MediaPlayer mediaPlayer;
@@ -67,14 +67,14 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         setContentView(R.layout.activity_main);
         timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
+        mInstructions = findViewById(R.id.instructions);
         mProgressView = findViewById(R.id.progress_text);
         mSettingsButton = findViewById(R.id.button_settings);
 
         mTextAccelerometer = findViewById(R.id.text_accelerometer);
-        mTextProximity = findViewById(R.id.text_proximity);
         mTextNoise = findViewById(R.id.text_noise);
 
-        mProgressView.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
+        mProgressView.setProgressTintList(ColorStateList.valueOf(Color.DKGRAY));
         mProgressView.setProgress(timer.getToday());
 
         mDetector = new Detector(this);
@@ -153,29 +153,29 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         }
         for (String key : fenceStates.keySet()) {
             TextView view = null;
-            if (key.equals("proximity")) {
-                view = mTextProximity;
-            } else if (key.equals("accelerometer")) {
+            if (key.equals("accelerometer")) {
                 view = mTextAccelerometer;
             } else if (key.equals("noise")) {
                 view = mTextNoise;
             }
-
-            FenceState s = fenceStates.get(key);
-            if (s == FenceState.INSIDE) {
-                view.setBackgroundColor(Color.GREEN);
-                view.setVisibility(View.VISIBLE);
-            } else if (s == FenceState.OUTSIDE) {
-                view.setBackgroundColor(Color.RED);
-                view.setVisibility(View.VISIBLE);
-            } else {
-                view.setVisibility(View.GONE);
+            if (view != null) {
+                FenceState s = fenceStates.get(key);
+                if (s == FenceState.INSIDE) {
+                    view.setBackgroundColor(Color.GREEN);
+                    view.setVisibility(View.GONE);
+                } else if (s == FenceState.OUTSIDE) {
+                    view.setBackgroundColor(Color.RED);
+                    view.setVisibility(View.GONE);
+                } else {
+                    view.setVisibility(View.GONE);
+                }
             }
         }
 
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
-        mTextView.setText((state == FenceState.INSIDE ? "Studying" : "To start studying, put your phone face down on a table.") + "\nYou have studied for: "
+        mInstructions.setText(state == FenceState.INSIDE ? "Studying" : "To start studying, put your phone face down on a table.");
+        mTextView.setText("You have studied for: "
                 + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + " minutes");
         mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
             mDetector.restart();
         } else if (requestCode == SystemSettings.REQUEST_CODE_SETTINGS) {
             mTextAccelerometer.setVisibility(View.GONE);
-            mTextProximity.setVisibility(View.GONE);
             mTextNoise.setVisibility(View.GONE);
         }
     }

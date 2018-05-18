@@ -80,6 +80,6 @@
     <string name="pref_title_feedback">Audible feedback</string>
     <string name="pref_do_not_disturb">Do not disturb</string>
     <string name="pref_title_brightness_control">Brightness Control</string>
-    <string name="factory_reset">Factory Reset app</string>
+    <string name="factory_reset">Reset study time</string>
 
 </resources>
