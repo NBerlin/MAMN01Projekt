@@ -17,6 +17,7 @@ public class Detector implements SensorFenceListener {
     private final SettingsValues mSettings;
     private final Context mContext;
     private final SystemSettings mSystemSettings;
+    private FenceState mLastState;
     private boolean mIsRunning;
 
     public Detector(Context context) {
@@ -71,26 +72,31 @@ public class Detector implements SensorFenceListener {
     }
 
     @Override
-    public void stateChanged(SensorFence sensor, SensorEnums state) {
+    public void stateChanged(SensorFence sensor, FenceState state) {
         boolean isInside = true;
         Log.d("Detector", "onStateChange " + sensor.getClass().getSimpleName() + " " + state);
         for (SensorFence mFence : mFences) {
-            isInside &= mFence.getLastState() == SensorEnums.INSIDE;
+            isInside &= mFence.getLastState() == FenceState.INSIDE;
         }
 
-        SensorEnums outState = isInside ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
+        FenceState outState = isInside ? FenceState.INSIDE : FenceState.OUTSIDE;
 
         for (DetectorListener listener : mListeners) {
             listener.onStateChange(outState);
+            mLastState = outState;
         }
     }
 
-    public HashMap<String, SensorEnums> getFenceStates() {
-        HashMap<String, SensorEnums> map = new HashMap<>();
+    public HashMap<String, FenceState> getFenceStates() {
+        HashMap<String, FenceState> map = new HashMap<>();
         for (SensorFence fence : mFences) {
             map.put(fence.getName(), fence.getLastState());
         }
         return map;
+    }
+
+    public FenceState getLastState() {
+        return mLastState;
     }
 
     public void restart() {

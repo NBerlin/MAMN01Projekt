@@ -1,5 +1,5 @@
 package grupp1.projekt.detector;
 
-public enum SensorEnums {
+public enum FenceState {
     INSIDE, OUTSIDE
 }

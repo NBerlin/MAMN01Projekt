@@ -6,16 +6,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.PowerManager;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static grupp1.projekt.detector.SensorEnums.INSIDE;
-import static grupp1.projekt.detector.SensorEnums.OUTSIDE;
+import static grupp1.projekt.detector.FenceState.INSIDE;
+import static grupp1.projekt.detector.FenceState.OUTSIDE;
 
 public class Proximity implements SensorFence, SensorEventListener {
-    SensorEnums mLastState;
+    FenceState mLastState;
     private SensorManager sensorManager;
     private Sensor proximitySensor;
     private List<SensorFenceListener> mListeners;
@@ -29,7 +28,7 @@ public class Proximity implements SensorFence, SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         float distance = event.values[0];
-        SensorEnums state;
+        FenceState state;
         if (distance < 5.0) {
             state = INSIDE;
         } else {
@@ -72,14 +71,14 @@ public class Proximity implements SensorFence, SensorEventListener {
         mListeners.remove(listener);
     }
 
-    private void informListeners(SensorEnums state) {
+    private void informListeners(FenceState state) {
         for (SensorFenceListener listener : mListeners) {
             listener.stateChanged(this, state);
         }
     }
 
     @Override
-    public SensorEnums getLastState() {
+    public FenceState getLastState() {
         return mLastState;
     }
 

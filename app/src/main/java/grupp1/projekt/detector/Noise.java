@@ -13,7 +13,7 @@ public class Noise implements SensorFence {
     private Handler mHandler;
     private ArrayList<SensorFenceListener> mListeners;
     private MediaRecorder mRecorder;
-    private SensorEnums mLastState;
+    private FenceState mLastState;
 
     private static final long SAMPLE_RATE = 3000;
     private static final double THRESHOLD = 400;
@@ -23,7 +23,7 @@ public class Noise implements SensorFence {
         public void run() {
             double amplitude = getAmplitude();
             // Log.d("Noise", "amplitude " + amplitude);
-            SensorEnums state = amplitude > THRESHOLD ? SensorEnums.OUTSIDE : SensorEnums.INSIDE;
+            FenceState state = amplitude > THRESHOLD ? FenceState.OUTSIDE : FenceState.INSIDE;
             if (mLastState != state) {
                 mLastState = state;
                 informListeners(state);
@@ -49,7 +49,7 @@ public class Noise implements SensorFence {
             mRecorder.prepare();
             mRecorder.start();
             startSampling();
-            mLastState = SensorEnums.OUTSIDE;
+            mLastState = FenceState.OUTSIDE;
         } catch (IOException e) {
             // e.printStackTrace();
             throw new PermissionException();
@@ -84,14 +84,14 @@ public class Noise implements SensorFence {
         mListeners.remove(listener);
     }
 
-    private void informListeners(SensorEnums state) {
+    private void informListeners(FenceState state) {
         for (SensorFenceListener listener : mListeners) {
             listener.stateChanged(this, state);
         }
     }
 
     @Override
-    public SensorEnums getLastState() {
+    public FenceState getLastState() {
         return mLastState;
     }
 

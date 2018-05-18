@@ -48,7 +48,7 @@ public class Accelerometer implements SensorFence, SensorEventListener {
     }
 
     @Override
-    public SensorEnums getLastState() {
+    public FenceState getLastState() {
         return getSensorEnum();
     }
 
@@ -78,8 +78,8 @@ public class Accelerometer implements SensorFence, SensorEventListener {
         //idk
     }
 
-    private SensorEnums getSensorEnum() {
-        return flipped ? SensorEnums.INSIDE : SensorEnums.OUTSIDE;
+    private FenceState getSensorEnum() {
+        return flipped ? FenceState.INSIDE : FenceState.OUTSIDE;
     }
 
     @Override

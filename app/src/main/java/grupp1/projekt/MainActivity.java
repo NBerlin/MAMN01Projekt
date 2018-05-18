@@ -6,8 +6,9 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.VibrationEffect;
-import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,15 +19,16 @@ import android.os.Vibrator;
 
 
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import grupp1.projekt.detector.Detector;
 import grupp1.projekt.detector.DetectorListener;
-import grupp1.projekt.detector.SensorEnums;
+import grupp1.projekt.detector.FenceState;
 import grupp1.projekt.settings.SettingsValues;
 import grupp1.projekt.settings.SettingActivity;
 import grupp1.projekt.detector.StudyTimer;
 import grupp1.projekt.util.SystemSettings;
+import grupp1.projekt.util.Speaker;
 
 public class MainActivity extends AppCompatActivity implements DetectorListener, View.OnClickListener {
 
@@ -41,10 +43,25 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private SettingsChanger mSettingsChanger;
     private SettingsValues mSettingsValues;
 
-    private SensorEnums lastState;
+    private Speaker mSpeaker;
+
+    private Handler mHandler;
+    private AtomicBoolean mHandlerIsRunning = new AtomicBoolean(false);
+
+    private FenceState lastState;
     private StudyTimer timer;
 
-    private TextToSpeech mTts;
+    private Runnable mSpeakerRun = new Runnable() {
+        @Override
+        public void run() {
+            if (mSettingsValues.isFeedbackOn() && mDetector.getLastState() == FenceState.OUTSIDE) {
+                HashMap<String, FenceState> fenceStates = mDetector.getFenceStates();
+                mSpeaker.voiceFeedback(fenceStates);
+            }
+            mHandlerIsRunning.set(false);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,21 +80,15 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         mProgressView.setProgress(timer.getToday());
 
         mDetector = new Detector(this);
-        lastState = SensorEnums.OUTSIDE;
+        lastState = FenceState.OUTSIDE;
 
         mSettingsValues = new SettingsValues(this.getBaseContext());
         mSettingsChanger = new SettingsChanger(this.getBaseContext());
         mSystemSettings = new SystemSettings(this.getBaseContext());
 
-        mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                    int result = mTts.setLanguage(Locale.UK);
-                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        mTts.setLanguage(Locale.ENGLISH);
-                    }
-            }
-        });
+        mSpeaker = new Speaker(this.getBaseContext());
+
+        mHandler = new Handler(Looper.getMainLooper());
 
         onStateChange(lastState);
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.tada);
@@ -112,12 +123,12 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     }
 
     @Override
-    public void onStateChange(SensorEnums state) {
+    public void onStateChange(FenceState state) {
         lastState = state;
 
-        if (state == SensorEnums.INSIDE) {
+        if (state == FenceState.INSIDE) {
             timer.start();
-        } else if (state == SensorEnums.OUTSIDE) {
+        } else if (state == FenceState.OUTSIDE) {
             timer.stop();
             if (timer.getToday() >= mSettingsValues.getMinutesToStudy() && !timer.hasRungToday()) {
                 timer.ring();
@@ -137,8 +148,11 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
             throw new RuntimeException("How did you end up here?");
         }
 
-        HashMap<String, SensorEnums> fenceStates = mDetector.getFenceStates();
-        voiceFeedback(fenceStates);
+        HashMap<String, FenceState> fenceStates = mDetector.getFenceStates();
+        if (state == FenceState.OUTSIDE && !mHandlerIsRunning.get()) {
+            mHandler.postDelayed(mSpeakerRun,5000);
+            mHandlerIsRunning.set(true);
+        }
         for (String key : fenceStates.keySet()) {
             TextView view = null;
             if (key.equals("proximity")) {
@@ -149,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
                 view = mTextNoise;
             }
 
-            SensorEnums s = fenceStates.get(key);
-            if (s == SensorEnums.INSIDE) {
+            FenceState s = fenceStates.get(key);
+            if (s == FenceState.INSIDE) {
                 view.setBackgroundColor(Color.GREEN);
                 view.setVisibility(View.VISIBLE);
-            } else if (s == SensorEnums.OUTSIDE) {
+            } else if (s == FenceState.OUTSIDE) {
                 view.setBackgroundColor(Color.RED);
                 view.setVisibility(View.VISIBLE);
             } else {
@@ -163,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
-        mTextView.setText("Currently: " + (state == SensorEnums.INSIDE ? "Studying" : "Not studying, flip to start") + "\nYou have studied for: "
+        mTextView.setText("Currently: " + (state == FenceState.INSIDE ? "Studying" : "Not studying, flip to start") + "\nYou have studied for: "
                 + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + " minutes");
         mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
@@ -186,28 +200,5 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         startActivityForResult(intent, SystemSettings.REQUEST_CODE_SETTINGS);
     }
 
-    private void voiceFeedback(HashMap<String, SensorEnums> fenceStates) {
-        if (!mSettingsValues.isFeedbackOn()) {
-            return;
-        }
-        String text = "";
-        for (HashMap.Entry<String, SensorEnums> entry : fenceStates.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value == SensorEnums.OUTSIDE) {
-                if (key.equals("proximity")) {
-                    text += "Please put the phone down. ";
-                } else if (key.equals("accelerometer")) {
-                    text += "Please turn the phone face down. ";
-                } else if (key.equals("noise")) {
-                    text += "I consider studying a quiet activity. Shut up! ";
-                }
-            }
-        }
-        speak(text);
-    }
 
-    private void speak(String text) {
-        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-    }
 }
