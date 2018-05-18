@@ -188,8 +188,25 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, SettingActivity.class);
-        startActivityForResult(intent, SystemSettings.REQUEST_CODE_SETTINGS);
+        switch (v.getId()) {
+            case R.id.button_settings: {
+
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
+            }
+            case R.id.button_start: {
+                if(!hasStarted) {
+                    mDetector.registerListener(this);
+                    mDetector.start();
+                    hasStarted=true;
+                }
+                else{
+                    mDetector.unregisterListener(this);
+                    mDetector.stop();
+                    hasStarted=false;
+                }
+            }
+        }
     }
 
     private void voiceFeedback(HashMap<String, SensorEnums> fenceStates) {
@@ -215,24 +232,5 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
     private void speak(String text) {
         mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        switch (v.getId()) {
-            case R.id.button_settings: {
-
-                Intent intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-            }
-            case R.id.button_start: {
-                if(!hasStarted) {
-                    mDetector.registerListener(this);
-                    mDetector.start();
-                    hasStarted=true;
-                }
-                else{
-                    mDetector.unregisterListener(this);
-                    mDetector.stop();
-                    hasStarted=false;
-                }
-            }
-        }
     }
 }
