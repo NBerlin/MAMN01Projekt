@@ -26,7 +26,8 @@ public class Storage {
         try {
             Reader reader = new FileReader(absolutePath);
             Gson gson = new GsonBuilder().create();
-            Type type = new TypeToken<HashMap<String, Integer>>() {}.getType();
+            Type type = new TypeToken<HashMap<String, Integer>>() {
+            }.getType();
             HashMap<String, Integer> map = gson.fromJson(reader, type);
             return map;
         } catch (FileNotFoundException e) {
@@ -35,8 +36,6 @@ public class Storage {
         }
         return new HashMap<>();
     }
-
-
 
     public static void saveStudyTime(Context context, HashMap<String, Integer> storage) {
         File filesDir = context.getFilesDir();

@@ -10,13 +10,10 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import grupp1.projekt.util.Storage;
-import grupp1.projekt.settings.SettingsValues;
 
 public class StudyTimer {
     private DateFormat mDateFormat;
-
     private Context mContext;
-
     private Long lastStart;
     private HashMap<String, Integer> mStorage;
     private boolean hasRung;
@@ -56,7 +53,9 @@ public class StudyTimer {
 
     public void factoryReset() {
         mStorage = new HashMap<>();
+        Storage.saveStudyTime(mContext, mStorage);
         lastStart = null;
+        hasRung = false;
     }
 
     public void ring() {

@@ -7,16 +7,14 @@ import android.support.v7.preference.PreferenceManager;
 public class SettingsValues {
 
     private final static String PREF_TIME_TO_STUDY = "study_goal_minutes";
-
     private final static String PREF_ACCELEROMETER = "detector_accelerometer";
     private final static String PREF_PROXIMITY = "detector_proximity";
     private final static String PREF_NOISE = "detector_voice";
-
     private final static String PREF_FEEDBACK_ON = "feedback_on";
     private final static String PREF_DO_NOT_DISTURB = "do_not_disturb";
     private final static String PREF_BRIGHTNESS = "brightness_control";
 
-    private final SharedPreferences mPreferences;
+    private SharedPreferences mPreferences;
 
     public SettingsValues(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -44,17 +42,16 @@ public class SettingsValues {
     }
 
     public boolean isAccelerometerOn() {
-        return mPreferences.getBoolean(PREF_ACCELEROMETER, false);
+        return mPreferences.getBoolean(PREF_ACCELEROMETER, true);
     }
 
     public boolean isProximityOn() {
-        return mPreferences.getBoolean(PREF_PROXIMITY, false);
+        return mPreferences.getBoolean(PREF_PROXIMITY, true);
     }
 
     public boolean isNoiseOn() {
         return mPreferences.getBoolean(PREF_NOISE, false);
     }
-
 
     public boolean isBrightnessOn() {
         return mPreferences.getBoolean(PREF_BRIGHTNESS, false);

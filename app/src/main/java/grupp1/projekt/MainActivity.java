@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private TextView mTextView, mTextAccelerometer, mTextProximity, mTextNoise;
     private ProgressBar mProgressView;
     private Button mSettingsButton;
-    private Button mStartButton;
     private MediaPlayer mediaPlayer;
 
     private SystemSettings mSystemSettings;
@@ -44,13 +43,9 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     private SettingsValues mSettingsValues;
 
     private Speaker mSpeaker;
-
     private Handler mHandler;
 
     private AtomicBoolean mHandlerIsRunning = new AtomicBoolean(false);
-    private boolean hasRung;
-    private boolean hasStarted;
-
     private FenceState lastState;
     private StudyTimer timer;
 
@@ -70,9 +65,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        hasRung = false;
-        hasStarted = false;
-        mStartButton = findViewById(R.id.button_start);
         timer = new StudyTimer(this.getApplicationContext());
         mTextView = findViewById(R.id.main_text);
         mProgressView = findViewById(R.id.progress_text);
@@ -105,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         super.onStart();
         if (mSettingsValues.isBrightnessOn() && !mSystemSettings.isBrightnessAvailable()) {
             mSystemSettings.requestBrightness(this);
-        } else if(mSettingsValues.isDoNotDisturbOn() && !mSystemSettings.isDoNotDisturbAvailable()) {
+        } else if (mSettingsValues.isDoNotDisturbOn() && !mSystemSettings.isDoNotDisturbAvailable()) {
             mSystemSettings.requestDoNotDisturb(this);
         } else if (mSettingsValues.isNoiseOn() && !mSystemSettings.isRecordingAvailable()) {
             mSystemSettings.requestAudioRecording(this);
@@ -118,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
         mDetector.restart();
 
         mSettingsButton.setOnClickListener(this);
-        mStartButton.setOnClickListener(this);
     }
 
     @Override
@@ -157,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         HashMap<String, FenceState> fenceStates = mDetector.getFenceStates();
         if (state == FenceState.OUTSIDE && !mHandlerIsRunning.get()) {
-            mHandler.postDelayed(mSpeakerRun,5000);
+            mHandler.postDelayed(mSpeakerRun, 5000);
             mHandlerIsRunning.set(true);
         }
         for (String key : fenceStates.keySet()) {
@@ -184,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
         int timeToStudy = mSettingsValues.getMinutesToStudy();
 
-        mTextView.setText("Currently: " + (state == FenceState.INSIDE ? "Studying" : "Not studying, flip to start") + "\nYou have studied for: "
+        mTextView.setText((state == FenceState.INSIDE ? "Studying" : "To start studying, put your phone face down on a table.") + "\nYou have studied for: "
                 + timer.getToday() + " minutes\nYour goal is to study for " + timeToStudy + " minutes");
         mProgressView.setProgress(timer.getToday() * 100 / timeToStudy);
     }
@@ -208,18 +199,6 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
 
                 Intent intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
-            }
-            case R.id.button_start: {
-                if(!hasStarted) {
-                    mDetector.registerListener(this);
-                    mDetector.start();
-                    hasStarted=true;
-                }
-                else{
-                    mDetector.unregisterListener(this);
-                    mDetector.stop();
-                    hasStarted=false;
-                }
             }
         }
     }

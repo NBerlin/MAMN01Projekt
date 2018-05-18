@@ -42,6 +42,9 @@
         android:key="detector_voice"
         android:title="@string/pref_title_voice" />
 
+    <Preference android:title="@string/factory_reset"
+        android:key="@string/factory_reset"
+        android:summary="This will delete all your data"/>
 
 
 </PreferenceScreen>

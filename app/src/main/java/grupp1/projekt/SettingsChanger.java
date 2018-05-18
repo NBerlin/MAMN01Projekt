@@ -7,11 +7,9 @@ import grupp1.projekt.detector.FenceState;
 import grupp1.projekt.util.SystemSettings;
 
 public class SettingsChanger implements DetectorListener {
-    private final Context mContext;
     private final SystemSettings mSystemSettings;
 
     public SettingsChanger(Context context) {
-        mContext = context;
         mSystemSettings = new SystemSettings(context);
     }
 

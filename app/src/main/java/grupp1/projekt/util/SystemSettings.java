@@ -16,11 +16,10 @@ import grupp1.projekt.settings.SettingsValues;
 
 public class SystemSettings {
 
-    private final Context mContext;
-    private final SettingsValues mSettingsValues;
-
     public static final int REQUEST_CODE_AUDIO = 1203;
     public static final int REQUEST_CODE_SETTINGS = 12231;
+    private final Context mContext;
+    private final SettingsValues mSettingsValues;
 
     public SystemSettings(Context context) {
         mContext = context;
@@ -33,7 +32,7 @@ public class SystemSettings {
     }
 
     public boolean isBrightnessAvailable() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(mContext);
         } else {
             return true;
@@ -41,7 +40,7 @@ public class SystemSettings {
     }
 
     public boolean isDoNotDisturbAvailable() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             NotificationManager notificationManager =
                     (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             return notificationManager.isNotificationPolicyAccessGranted();
@@ -92,6 +91,4 @@ public class SystemSettings {
             }
         }
     }
-
-
 }
