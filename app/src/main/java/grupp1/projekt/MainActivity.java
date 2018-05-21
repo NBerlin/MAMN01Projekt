@@ -162,10 +162,10 @@ public class MainActivity extends AppCompatActivity implements DetectorListener,
                 FenceState s = fenceStates.get(key);
                 if (s == FenceState.INSIDE) {
                     view.setBackgroundColor(Color.GREEN);
-                    view.setVisibility(View.GONE);
+                    view.setVisibility(View.VISIBLE);
                 } else if (s == FenceState.OUTSIDE) {
                     view.setBackgroundColor(Color.RED);
-                    view.setVisibility(View.GONE);
+                    view.setVisibility(View.VISIBLE);
                 } else {
                     view.setVisibility(View.GONE);
                 }

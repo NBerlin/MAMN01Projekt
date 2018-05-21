@@ -12,15 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/text_accelerometer"
@@ -32,10 +24,7 @@
             android:padding="16dp"
             android:text="Phone facedown on table"
             android:textAlignment="center"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_proximity" />
+            android:visibility="gone"/>
 
 
         <TextView
@@ -48,10 +37,7 @@
             android:padding="16dp"
             android:text="Environment quiet enough"
             android:textAlignment="center"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_accelerometer" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/instructions"
